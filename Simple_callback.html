@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Callback</title>
+</head>
+<body>
+  <h2>Simple Callback Example</h2>
+  <div id="output"></div>
+
+  <script>
+    function greet(name, callback) {
+      document.getElementById("output").innerHTML += `Hello, ${name}!<br>`;
+      callback();
+    }
+
+    greet("Devi", () => {
+      document.getElementById("output").innerHTML += "Greeting complete.........<br>";
+    });
+  </script>
+</body>
+</html>
