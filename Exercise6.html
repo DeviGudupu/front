@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 350px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .weather-info {
+      margin-top: 20px;
+      background: #f7f9fc;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .loading {
+      color: #007bff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Weather App</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name" required>
+    <button id="getWeather">Get Weather</button>
+    <div id="message" class="error"></div>
+
+    <div id="weatherResult" class="weather-info" style="display:none;">
+      <h3 id="cityName"></h3>
+      <p id="temperature"></p>
+      <p id="description"></p>
+    </div>
+  </div>
+  <script>
+    const apiKey = "https://api.open-meteo.com/v1/forecast"; 
+    const cityInput = document.getElementById("cityInput");
+    const getWeatherBtn = document.getElementById("getWeather");
+    const message = document.getElementById("message");
+    const weatherBox = document.getElementById("weatherResult");
+    const cityNameEl = document.getElementById("cityName");
+    const tempEl = document.getElementById("temperature");
+    const descEl = document.getElementById("description");
+    async function getCoordinates(city) {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${city}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network error");
+      const data = await response.json();
+      if (!data.results || data.results.length === 0) throw new Error("City not found");
+      const { latitude, longitude, name, country } = data.results[0];
+      return { latitude, longitude, name, country };
+    }
+    async function getWeather(city) {
+      message.textContent = "";
+      message.className = "loading";
+      message.textContent = "Fetching weather...";
+
+      try {
+        const { latitude, longitude, name, country } = await getCoordinates(city);
+        const weatherUrl = `${apiKey}?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
+        const response = await fetch(weatherUrl);
+        if (!response.ok) throw new Error("Weather fetch failed");
+        const data = await response.json();
+
+        const temp = data.current_weather.temperature;
+        const condition = data.current_weather.weathercode;
+
+        const conditionText = getConditionText(condition);
+
+        cityNameEl.textContent = `${name}, ${country}`;
+        tempEl.textContent = ` Temperature: ${temp}°C`;
+        descEl.textContent = ` Condition: ${conditionText}`;
+        weatherBox.style.display = "block";
+        message.textContent = "";
+
+        
+        localStorage.setItem("lastCity", city);
+      } catch (error) {
+        weatherBox.style.display = "none";
+        message.className = "error";
+        message.textContent = "error " + error.message;
+      }
+    }
+
+    
+    function getConditionText(code) {
+      const conditions = {
+        0: "Clear sky",
+        1: "Mainly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+        45: "Fog",
+        48: "Depositing rime fog",
+        51: "Light drizzle",
+        61: "Slight rain",
+        71: "Slight snow",
+        80: "Rain showers",
+        95: "Thunderstorm"
+      };
+      return conditions[code] || "Unknown";
+    }
+
+    
+    getWeatherBtn.addEventListener("click", () => {
+      const city = cityInput.value.trim();
+      if (city === "") {
+        message.className = "error";
+        message.textContent = " Please enter a city name";
+      } else {
+        getWeather(city);
+      }
+    });
+
+    
+    window.addEventListener("load", () => {
+      const lastCity = localStorage.getItem("lastCity");
+      if (lastCity) {
+        cityInput.value = lastCity;
+        getWeather(lastCity);
+      }
+    });
+  </script>
+</body>
+</html>
