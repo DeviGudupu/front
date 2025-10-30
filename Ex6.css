@@ -1,0 +1,92 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #89f7fe, #66a6ff);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+}
+
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+h1 {
+  color: #0077b6;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 10px;
+  width: 80%;
+  border: 2px solid #0077b6;
+  border-radius: 8px;
+  outline: none;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 15px;
+  margin-top: 10px;
+  border: none;
+  background-color: #0077b6;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #023e8a;
+}
+
+.weather-info {
+  margin-top: 25px;
+  background-color: #f1f9ff;
+  padding: 15px;
+  border-radius: 10px;
+  display: none;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+  font-weight: bold;
+  display: none;
+}
+
+.temp {
+  font-size: 40px;
+  font-weight: bold;
+  color: #023e8a;
+}
+
+.desc {
+  font-size: 20px;
+  color: #0077b6;
+}
+
+/* Responsive for mobile */
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  input {
+    width: 100%;
+  }
+}
